@@ -1,4 +1,4 @@
 .env
 venv/
-.chroma/
-__pycache__/
+server/.chroma/
+server/__pycache__/
