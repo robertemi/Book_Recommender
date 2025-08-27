@@ -8,10 +8,12 @@ load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))  
 DATA_PATH = os.path.join(BASE_DIR, "data", "books.txt")
-
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CHROMA_DIR = os.path.join(PROJECT_ROOT, "chroma")
+chromadb_client = chromadb.PersistentClient(path=CHROMA_DIR)
 
 openai_client = OpenAI(api_key=api_key)
-chromadb_client = chromadb.PersistentClient(path=".chroma")
+chromadb_client = chromadb.PersistentClient(path=CHROMA_DIR)
 collection = chromadb_client.get_or_create_collection("book_summaries")
 
 def parse_books(path):
@@ -51,6 +53,8 @@ def embedd_and_persist():
             vectors.append(vector)
 
         collection.upsert(ids=ids, embeddings=vectors, documents=documents, metadatas=metadata)
+        print("Chroma dir:", CHROMA_DIR, "| count:", collection.count())
+
     except Exception as e:
         print(f'Error occured when embedding/persisting to ChromaDB: {e}')
 
