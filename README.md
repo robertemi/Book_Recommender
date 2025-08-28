@@ -4,8 +4,9 @@ Book Recommender Chatbot build using the OpenAI API and ChromaDB vectore databas
 
 pip install requirements.txt
 
-**IMPORTANT**
-BEFORE RUNNING THE SERVER MAKE SURE TO RUN python3 **setup.py**. This creates the embeddings and stores these for the sample books.txt data. Without running this beforehand, the book recommender will NOT work! 
+**!!IMPORTANT!!**
+
+BEFORE RUNNING THE SERVER MAKE SURE TO RUN **python3 setup.py**. This creates the embeddings and stores these for the sample books.txt data. Without running this beforehand, the book recommender will NOT work! 
 
 
 **To run the server:**
