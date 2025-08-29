@@ -53,7 +53,6 @@ def embedd_and_persist():
             vectors.append(vector)
 
         collection.upsert(ids=ids, embeddings=vectors, documents=documents, metadatas=metadata)
-        print("Chroma dir:", CHROMA_DIR, "| count:", collection.count())
 
     except Exception as e:
         print(f'Error occured when embedding/persisting to ChromaDB: {e}')

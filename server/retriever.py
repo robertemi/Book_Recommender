@@ -11,8 +11,6 @@ CHROMA_DIR = os.path.join(PROJECT_ROOT, "chroma")
 load_dotenv()
 client = chromadb.PersistentClient(path=CHROMA_DIR)
 collection = client.get_or_create_collection("book_summaries")
-print("Chroma dir:", CHROMA_DIR, "| count:", collection.count())
-
 
 openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 

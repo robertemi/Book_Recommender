@@ -41,44 +41,64 @@ def chat(user_prompt: str) -> str:
     if not candidates:
         return f'No suitable books have been found'
     
+    context = "Candidates:\n" + "\n".join(
+        f"- {candidate['title']}: {candidate['text'][:280]}..." for candidate in candidates
+    )
+    
     candidate_titles = [c["title"] for c in candidates]
     system_prompt = SYSTEM + "\nCandidates:\n" + "\n".join(f"- {t}" for t in candidate_titles)
 
-    response = client.chat.completions.create(
-        model='gpt-4o-nano',
+    first_response = client.chat.completions.create(
+        model='gpt-4.1-nano',
         messages=[
             {'role': 'system', 'content': system_prompt},
-            {'role': 'user', 'content': user_prompt}
+            {'role': 'user', 'content': user_prompt},
+            {'role': 'assistant', 'content': context}
         ],
         tools=TOOLS,
-        tool_choice='auto'
+        tool_choice='auto',
+        temperature=0.2
     )
 
-    tool_calls = response.choices[0].message.tool_calls
+    message = first_response.choices[0].message
+    tool_calls = message.tool_calls if message.tool_calls else []
 
 
-    tool_args = json.loads(tool_calls[0].function.arguments)
-    title = tool_args["title"]
+    # extract chosen title
+    chosen_title = None
+    if tool_calls:
+        try:
+            args = json.loads(tool_calls[0].function.arguments or "{}")
+            chosen_title = (args.get("title") or "").strip()
+        except Exception:
+            chosen_title = None
 
+    # fallback if no/invalid tool call or hallucinated title
+    if not chosen_title or chosen_title not in candidate_titles:
+        chosen_title = candidate_titles[0]
 
-    summary = get_summary_by_title(title)
+    # run the tool locally
+    summary = get_summary_by_title(chosen_title)
+    if not summary or summary == "Summary not found.":
+        # second fallback: return a simple recommendation without long summary
+        return f"I recommend **{chosen_title}**. It fits your request based on semantic search, " \
+               f"but I couldn't retrieve the long summary right now."
 
-    # send tool call output back to model for final reply
-    followup = client.chat.completions.create(
-        model="gpt-4o-nano",
+    # return tool result to model to create the final answer
+    final = client.chat.completions.create(
+        model="gpt-4o-mini",
         messages=[
-            {"role": "system", "content": system_prompt},
+            {"role": "system", "content": SYSTEM},
             {"role": "user", "content": user_prompt},
-            response.choices[0].message,
+            {"role": "assistant", "content": context},
+            message,
             {
                 "role": "tool",
-                "tool_call_id": tool_calls[0].id,
+                "tool_call_id": tool_calls[0].id if tool_calls else "manual_fallback",
                 "name": "get_summary_by_title",
-                "content": summary
-            }
+                "content": summary,
+            },
         ],
-        tools=TOOLS
+        temperature=0.2,
     )
-
-    # final reply
-    return followup.choices[0].message.content
+    return final.choices[0].message.content.strip()

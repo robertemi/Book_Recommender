@@ -1,4 +1,11 @@
-.env
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environments
 venv/
-server/.chroma/
-server/__pycache__/
+
+# ChromaDB local storage
+chroma/
+.env
