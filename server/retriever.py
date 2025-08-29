@@ -19,7 +19,7 @@ openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 Returns top k hits for the given user query
 
 '''
-def search_books(query: str, k: int = 3):
+async def search_books(query: str, k: int = 3):
     
     embedded_query = openai_client.embeddings.create(
         input=query,

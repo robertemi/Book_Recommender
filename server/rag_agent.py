@@ -35,8 +35,8 @@ TOOLS = [
 ]
 
 
-def chat(user_prompt: str) -> str:
-    candidates = search_books(user_prompt, k=3)
+async def chat(user_prompt: str) -> str:
+    candidates = await search_books(user_prompt, k=3)
 
     if not candidates:
         return f'No suitable books have been found'
@@ -78,7 +78,7 @@ def chat(user_prompt: str) -> str:
         chosen_title = candidate_titles[0]
 
     # run the tool locally
-    summary = get_summary_by_title(chosen_title)
+    summary = await get_summary_by_title(chosen_title)
     if not summary or summary == "Summary not found.":
         # second fallback: return a simple recommendation without long summary
         return f"I recommend **{chosen_title}**. It fits your request based on semantic search, " \

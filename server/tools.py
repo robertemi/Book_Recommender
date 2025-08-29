@@ -37,7 +37,7 @@ Themes: censorship, freedom, knowledge, rebellion."""
 }
 
 
-def get_summary_by_title(title: str) -> str:
+async def get_summary_by_title(title: str) -> str:
     if not title:
        return "Summary not found."
      

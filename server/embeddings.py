@@ -16,7 +16,7 @@ openai_client = OpenAI(api_key=api_key)
 chromadb_client = chromadb.PersistentClient(path=CHROMA_DIR)
 collection = chromadb_client.get_or_create_collection("book_summaries")
 
-def parse_books(path):
+async def parse_books(path):
     books, title, summary = [], None, []
 
     try:
@@ -37,8 +37,8 @@ def parse_books(path):
         print(f'Error occured when parsing books: {e}')
 
 
-def embedd_and_persist():
-    books = parse_books(DATA_PATH)
+async def embedd_and_persist():
+    books = await parse_books(DATA_PATH)
     ids, documents, metadata, vectors = [], [], [], []
     try:
         for book in books:
