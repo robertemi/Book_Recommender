@@ -2,14 +2,14 @@ Book Recommender Chatbot build using the OpenAI API and ChromaDB vectore databas
 
 **Before running, use:**
 
-pip install requirements.txt
+```pip install requirements.txt```
 
 
 **To run the server:**
 
-uvicorn main:app
+```uvicorn main:app```
 
 
 **To run the client:**
 
-streamlit run homepage.py
+```streamlit run homepage.py```
